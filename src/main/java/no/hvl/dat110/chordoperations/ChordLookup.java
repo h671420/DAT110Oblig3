@@ -63,14 +63,17 @@ public class ChordLookup {
 		// starting from the last entry, iterate over the finger table
 		for (int i = fingerTable.size()-1;i>=0;i--){
 			// for each finger, obtain a stub from the registry
+			NodeInterface nodeInterface = fingerTable.get(i);
 			Remote stub = Node.toStub(fingerTable.get(i));
-			// check that finger is a member of the set {nodeID+1,...,ID-1} i.e. (nodeID+1 <= finger <= key-1) using the ComputeLogic
 
+			// check that finger is a member of the set {nodeID+1,...,ID-1} i.e. (nodeID+1 <= finger <= key-1) using the ComputeLogic
+			if(Util.checkInterval(nodeInterface.getNodeID(),this.node.getNodeID().add(new BigInteger("1")),ID))
+				return nodeInterface;
 			// if logic returns true, then return the finger (means finger is the closest to key)
 		}
 
-		
-		return (NodeInterface) node;			
+		return null;
+//		return (NodeInterface) node;
 	}
 	
 	public void copyKeysFromSuccessor(NodeInterface succ) {
