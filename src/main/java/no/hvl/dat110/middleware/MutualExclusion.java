@@ -114,9 +114,14 @@ public class MutualExclusion {
 		
 		// if message is from self, acknowledge, and call onMutexAcknowledgementReceived()
 		if (message.getNodeID().equals(this.node.getNodeID())){
+			//Marcus sitt
+			message.setClock(clock.getClock());
+			onMutexAcknowledgementReceived(message);
+			/*
+			min gamle
 			message.setAcknowledged(true);
 			onMutexAcknowledgementReceived(message);
-			return;
+			return;*/
 		}
 			
 		int caseid = -1;
@@ -151,23 +156,19 @@ public class MutualExclusion {
 			case 0: {
 				
 				// get a stub for the sender from the registry
-				NodeInterface node = Util.getProcessStub(message.getNodeName(), message.getPort());
+				NodeInterface node = Util.getProcessStub(procName, port);
 				// acknowledge message
-//				message.setAcknowledged(true);
-				Message thismsg = this.node.getMessage();
-				thismsg.setAcknowledged(true);
+				message.setAcknowledged(true);
 				// send acknowledgement back by calling onMutexAcknowledgementReceived()
-//				onMutexAcknowledgementReceived(message);
-				onMutexAcknowledgementReceived(thismsg);
+                assert node != null;
+                node.onMutexAcknowledgementReceived(message);
 				break;
 			}
 		
 			/** case 2: Receiver already has access to the resource (dont reply but queue the request) */
 			case 1: {
 				// queue this message
-//				queue.add(message);
-				Message thismsg = this.node.getMessage();
-				thismsg.setAcknowledged(true);
+				queue.add(message);
 				break;
 			}
 			
@@ -180,7 +181,7 @@ public class MutualExclusion {
 				int senderClock = message.getClock();
 				BigInteger senderId = message.getNodeID();
 				BigInteger thisId = this.node.getNodeID();
-				int thisClock = this.clock.getClock();
+				int thisClock = node.getMessage().getClock();
 				// own clock of the receiver (note that the correct clock is in the node's message)
 
 				boolean senderwins=false;
@@ -193,19 +194,21 @@ public class MutualExclusion {
 				
 				// if sender wins, acknowledge the message, obtain a stub and call onMutexAcknowledgementReceived()
 				if (senderwins){
-//					message.setAcknowledged(true);
+					message.setAcknowledged(true);
+					/*
 					Message thismsg = this.node.getMessage();
-					thismsg.setAcknowledged(true);
-					NodeInterface sender = Util.getProcessStub(message.getNodeName(), message.getPort());
+					thismsg.setAcknowledged(true);*/
+					NodeInterface sender = Util.getProcessStub(procName, port);
                     assert sender != null;
 //					sender.onMutexAcknowledgementReceived(message);
-					sender.onMutexAcknowledgementReceived(thismsg);
+					sender.onMutexAcknowledgementReceived(message);
 				}
 				// if sender looses, queue it
 				else{
-//					queue.add(message);
+					queue.add(message);
+					/*
 					Message thismsg = this.node.getMessage();
-					thismsg.setAcknowledged(true);
+					thismsg.setAcknowledged(true);*/
 				}
 
 
