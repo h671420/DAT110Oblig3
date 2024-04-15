@@ -114,14 +114,9 @@ public class MutualExclusion {
 		
 		// if message is from self, acknowledge, and call onMutexAcknowledgementReceived()
 		if (message.getNodeID().equals(this.node.getNodeID())){
-			//Marcus sitt
 			message.setClock(clock.getClock());
 			onMutexAcknowledgementReceived(message);
-			/*
-			min gamle
-			message.setAcknowledged(true);
-			onMutexAcknowledgementReceived(message);
-			return;*/
+			return;
 		}
 			
 		int caseid = -1;
@@ -195,23 +190,14 @@ public class MutualExclusion {
 				// if sender wins, acknowledge the message, obtain a stub and call onMutexAcknowledgementReceived()
 				if (senderwins){
 					message.setAcknowledged(true);
-					/*
-					Message thismsg = this.node.getMessage();
-					thismsg.setAcknowledged(true);*/
 					NodeInterface sender = Util.getProcessStub(procName, port);
                     assert sender != null;
-//					sender.onMutexAcknowledgementReceived(message);
 					sender.onMutexAcknowledgementReceived(message);
 				}
 				// if sender looses, queue it
 				else{
 					queue.add(message);
-					/*
-					Message thismsg = this.node.getMessage();
-					thismsg.setAcknowledged(true);*/
 				}
-
-
 
 				break;
 			}
