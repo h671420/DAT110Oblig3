@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 
 public class Message implements Serializable {
 	
-
+//testchange
 	private static final long serialVersionUID = 1L;
 	private int clock = 0;
 	private BigInteger nodeID;
